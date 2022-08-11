@@ -142,7 +142,10 @@ namespace MISA.QuyTrinh.Infrastructure.Repository
             }
         }
 
-
+        public MySqlConnection GetConnection()
+        {
+            return new MySqlConnection(ConnectionString);
+        }
         #endregion
     }
 }

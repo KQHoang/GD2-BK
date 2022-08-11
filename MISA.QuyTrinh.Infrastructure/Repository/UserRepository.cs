@@ -24,7 +24,7 @@ namespace MISA.QuyTrinh.Infrastructure.Repository
             using (SqlConnection = new MySqlConnection(ConnectionString))
             {
                
-                      var sqlQuery = "Proc_GetUser";
+                   var sqlQuery = "Proc_GetUser";
                    var res = SqlConnection.Query<User>(sql: sqlQuery, commandType: System.Data.CommandType.StoredProcedure);
                    return res;
             }

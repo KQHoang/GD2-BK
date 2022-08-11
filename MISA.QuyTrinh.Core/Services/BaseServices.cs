@@ -1,6 +1,7 @@
 ﻿using MISA.QuyTrinh.Core.Exceptions;
 using MISA.QuyTrinh.Core.Interfaces.Repository;
 using MISA.QuyTrinh.Core.Interfaces.Services;
+using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -195,20 +196,34 @@ namespace MISA.QuyTrinh.Core.Services
         /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
         public virtual int InsertAllService(IEnumerable<MisaEntity> entity)
         {
-            // Validate dữ liệu
-            var isValid = true;
-            if (isValid == true)
+            MySqlTransaction transaction = null; 
+            var connection = _repository.GetConnection();
+            using (connection)
             {
-                // Thêm mới
-                //this.BeforeInsert(entity);
-                var res = this.DoInsertAll(entity);
-                //this.AfterInsert(entity);
-                return res;
+                connection.Open();
+                transaction = connection.BeginTransaction();
+                try
+                {
+                    foreach (var item in entity)
+                    {
+                        var res = this.InsertService(item);
+                        if (res != 1)
+                            throw new MisaValidateException(ErrorValidateMsg);
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw new MisaValidateException(ErrorValidateMsg); ;
+                }
+                finally
+                {
+                    transaction.Dispose();
+                }
             }
-            else
-            {
-                throw new MisaValidateException(ErrorValidateMsg);
-            }
+            // nếu lỗi roll back
+            return 1;
+            
         }
 
         /// <summary>

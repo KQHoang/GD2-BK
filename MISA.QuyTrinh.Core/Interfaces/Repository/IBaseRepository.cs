@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySqlConnector;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -57,6 +58,8 @@ namespace MISA.QuyTrinh.Core.Interfaces.Repository
         /// </summary>
         /// <returns></returns>
         int Delete(Guid id1, Guid id2);
+
+        MySqlConnection GetConnection();
         #endregion
     }
 }
