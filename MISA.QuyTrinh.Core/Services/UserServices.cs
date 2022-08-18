@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MISA.QuyTrinh.Core.Services
@@ -13,38 +14,72 @@ namespace MISA.QuyTrinh.Core.Services
     {
         IUserRepository _repository;
         IUserRoleRepository _roleRepository;
-
+        #region Constructor
         public UserServices(IUserRepository repository, IUserRoleRepository roleRepository) : base(repository)
         {
             _repository = repository;
             _roleRepository = roleRepository;
         }
 
-        /// <summary>
-        /// Validate thêm mới
-        /// Người tạo: Khuất Quang Hoàng
-        /// Ngày tạo: (28/6/2022)
-        /// </summary>
-        /// <param name="entity">đối tượng cần kiểm tra dữ liệu</param>
-        /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
-        protected override bool ValidateInsert(User entity)
-        {
-            //validate mã
-            return true;
-        }
-        /// <summary>
-        /// Validate thêm mới
-        /// Người tạo: Khuất Quang Hoàng
-        /// Ngày tạo: (28/6/2022)
-        /// </summary>
-        /// <param name="entity">đối tượng cần kiểm tra dữ liệu</param>
-        /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
-        //public override User BeforeInsert(User entity)
-        //{
-        //    // thêm / sửa trước khi lưu ở đây
-        //    return entity;
-        //}
+        #endregion
 
+        #region Methods
+
+        /// <summary>
+        /// Validate thêm mới
+        /// Người tạo: Khuất Quang Hoàng
+        /// Ngày tạo: (28/6/2022)
+        /// </summary>
+        /// <param name="entity">đối tượng cần kiểm tra dữ liệu</param>
+        /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
+        protected override bool ValidateInsert(User entity, int index)
+        {
+            if (string.IsNullOrEmpty(entity.UserCode))
+            {
+                ErrorValidateMsg.Add(index + ": Mã người dùng không được để trống");
+                IsValid = false;
+            }
+
+            if (string.IsNullOrEmpty(entity.FullName))
+            {
+                ErrorValidateMsg.Add(index + ": Tên người dùng không được để trống");
+                IsValid = false;
+            }
+
+            if (string.IsNullOrEmpty(entity.Email))
+            {
+                ErrorValidateMsg.Add(index + ": Email không được để trống");
+                IsValid = false;
+            }
+
+            if(entity.RoleID.Count == 0)
+            {
+                ErrorValidateMsg.Add(index + ": Vai trò không được để trống");
+                IsValid = false;
+            }
+
+            if (entity.Status == null)
+            {
+                ErrorValidateMsg.Add(index + ": Trạng thái người dùng không được để trống");
+                IsValid = false;
+            }
+
+            if (!string.IsNullOrEmpty(entity.Email))
+            {
+                if (!Regex.IsMatch(entity.Email, @"^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$"))
+                {
+                    ErrorValidateMsg.Add(index + ": Email không đúng định dang");
+                    IsValid = false;
+                }
+            }
+            //validate mã
+            if (_repository.CheckUserCode(entity.UserCode) == true)
+            {
+                ErrorValidateMsg.Add(index+ ": Mã người dùng đã tồn tại");
+                IsValid = false;
+            }
+            return IsValid;
+        }
 
         /// <summary>
         /// Validate thêm mới
@@ -78,25 +113,19 @@ namespace MISA.QuyTrinh.Core.Services
 
         }
 
-        //public override int InsertAllService(IEnumerable<User> entity)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        protected override int DoInsertAll(IEnumerable<User> entity)
+        /// <summary>
+        /// Validate cập nhật 
+        /// Người tạo: Khuất Quang Hoàng
+        /// Ngày tạo: (28/6/2022)
+        /// </summary>
+        /// <param name="entity">đối tượng cần kiểm tra</param>
+        /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
+        protected override bool ValidateUpdate(User entity)
         {
-            List<int> responses = new List<int>();
-            foreach (var user in entity)
-            {
-                var res = this.DoInsert(user);
-                responses.Add(res);
-            }
-            foreach (var item in responses)
-            {
-                if (item == 0)
-                    return 0;
-            }
-            return 1;
+            return true;
         }
+
+
+        #endregion
     }
 }

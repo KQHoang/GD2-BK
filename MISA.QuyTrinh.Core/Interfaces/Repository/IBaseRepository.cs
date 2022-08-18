@@ -59,6 +59,12 @@ namespace MISA.QuyTrinh.Core.Interfaces.Repository
         /// <returns></returns>
         int Delete(Guid id1, Guid id2);
 
+        /// <summary>
+        /// Lấy kết nối server
+        /// Người tạo: Khuất Quang Hoàng
+        /// Ngày tạo: (3/8/2022)
+        /// </summary>
+        /// <returns></returns>
         MySqlConnection GetConnection();
         #endregion
     }

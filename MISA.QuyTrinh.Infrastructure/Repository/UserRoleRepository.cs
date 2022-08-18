@@ -12,6 +12,8 @@ namespace MISA.QuyTrinh.Infrastructure.Repository
 {
     public class UserRoleRepository: BaseRepository<User_Role>, IUserRoleRepository
     {
+        #region Methods
+
         /// <summary>
         /// Xoá dữ liệu có 2 id
         /// Người tạo: Khuất Quang Hoàng
@@ -31,5 +33,7 @@ namespace MISA.QuyTrinh.Infrastructure.Repository
                 return res;
             }
         }
+
+        #endregion
     }
 }

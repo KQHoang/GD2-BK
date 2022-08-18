@@ -40,24 +40,13 @@ namespace MISA.QuyTrinh.Core.Services
         /// <exception cref="MisaValidateException"></exception>
         public int InsertService(MisaEntity entity)
         {
-            // Validate dữ liệu
-            var isValid = ValidateInsert(entity);
-            if (isValid == true)
-            {
-                // Thêm mới
-                this.BeforeInsert(entity);
-                var res = this.DoInsert(entity);
-                this.AfterInsert(entity);
-                return res;
-            }
-            else
-            {
-                throw new MisaValidateException(ErrorValidateMsg);
-            }
+            // Thêm mới
+            this.BeforeInsert(entity);
+            var res = this.DoInsert(entity);
+            this.AfterInsert(entity);
+            return res;
 
         }
-
-
 
         /// <summary>
         /// Cập nhật dữ liệu
@@ -83,8 +72,6 @@ namespace MISA.QuyTrinh.Core.Services
             {
                 throw new MisaValidateException(ErrorValidateMsg);
             }
-
-
         }
 
         /// <summary>
@@ -93,8 +80,9 @@ namespace MISA.QuyTrinh.Core.Services
         /// Ngày tạo: (28/6/2022)
         /// </summary>
         /// <param name="entity">đối tượng cần kiểm tra dữ liệu</param>
+        ///  index: vị trí người dùng thêm mới
         /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
-        protected virtual bool ValidateInsert(MisaEntity entity)
+        protected virtual bool ValidateInsert(MisaEntity entity, int index)
         {
             return true;
         }
@@ -120,7 +108,7 @@ namespace MISA.QuyTrinh.Core.Services
         /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
         protected virtual void BeforeUpdate(MisaEntity entity)
         {
-            
+
         }
 
         /// <summary>
@@ -162,7 +150,6 @@ namespace MISA.QuyTrinh.Core.Services
 
         }
 
-
         /// <summary>
         /// Validate thêm mới
         /// Người tạo: Khuất Quang Hoàng
@@ -196,7 +183,22 @@ namespace MISA.QuyTrinh.Core.Services
         /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
         public virtual int InsertAllService(IEnumerable<MisaEntity> entity)
         {
-            MySqlTransaction transaction = null; 
+            List<bool> validates = new List<bool>();
+            var index = 1;
+            // Validate nhiều
+            foreach (var item in entity)
+            {
+                var res = ValidateInsert(item, index);
+                index++;
+            }
+
+            foreach (var item in validates)
+            {
+                if (!item)
+                    throw new MisaValidateException(ErrorValidateMsg);
+            }
+
+            MySqlTransaction transaction = null;
             var connection = _repository.GetConnection();
             using (connection)
             {
@@ -223,44 +225,46 @@ namespace MISA.QuyTrinh.Core.Services
             }
             // nếu lỗi roll back
             return 1;
-            
+
         }
 
         /// <summary>
-        /// Validate thêm mới
-        /// Người tạo: Khuất Quang Hoàng
-        /// Ngày tạo: (28/6/2022)
+        /// Thực hiện cập nhật vai trò 
         /// </summary>
-        /// <param name="entity">đối tượng cần kiểm tra dữ liệu</param>
-        /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
-        protected virtual int DoInsertAll(IEnumerable<MisaEntity> entity)
-        {
-            return 0;
-        }
-
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        /// <exception cref="MisaValidateException"></exception>
         public int UpdateService(IEnumerable<MisaEntity> entity)
         {
-            var isValid = true;
-            if (isValid == true)
+            MySqlTransaction transaction = null;
+            var connection = _repository.GetConnection();
+            using (connection)
             {
-                // Cập nhật
-                //this.BeforeUpdate(entity);
-                var res = this.DoUpdateAll(entity);
-                //this.AfterInsert(entity);
-                return res;
+                connection.Open();
+                transaction = connection.BeginTransaction();
+                try
+                {
+                    foreach (var item in entity)
+                    {
+                        var res = this.UpdateService(item);
+                        if (res == 0)
+                            throw new MisaValidateException(ErrorValidateMsg);
+                    }
+                }
+                catch (Exception)
+                {
+                    // nếu lỗi roll back
+                    transaction.Rollback();
+                    throw new MisaValidateException(ErrorValidateMsg);
+                }
+                finally
+                {
+                    transaction.Dispose();
+                }
             }
-            else
-            {
-                throw new MisaValidateException(ErrorValidateMsg);
-            }
+
+            return 1;
         }
-
-        protected virtual int DoUpdateAll(IEnumerable<MisaEntity> entity)
-        {
-            return 0;
-        }
-
-
         #endregion
     }
 }

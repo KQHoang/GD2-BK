@@ -10,36 +10,45 @@ namespace MISA.QuyTrinh.Api.Controllers
     [ApiController]
     public class UsersController : BaseController<User>
     {
+        #region Declare
         IUserServices _service;
         IUserRepository _repository;
+
+        #endregion
+
+        #region Constructor
         public UsersController(IUserRepository repository, IUserServices services) : base(repository, services)
         {
             _service = services;
             _repository = repository;
         }
 
-            /// <summary>
-            /// Thêm mới dữ liệu
-            /// Người tạo: Khuất Quang Hoàng
-            /// Ngày tạo: (29/06/2022)
-            /// </summary>
-            /// <param name="entity"></param>
-            /// <returns>Mã code và 1 - thành công, 0 - thất bại</returns>
-            [HttpPost("postAll")]
-            public IActionResult Post(List<User> entity)
-            {
-                try
-                {
-                    // trả kết quả về client
-                    var res = _service.InsertAllService(entity);
-                    return StatusCode(201, res);
-                }
-                catch (Exception ex)
-                {
+        #endregion
 
-                    return HandleException(ex);
-                }
+        #region Methods
+
+        /// <summary>
+        /// Thêm mới dữ liệu
+        /// Người tạo: Khuất Quang Hoàng
+        /// Ngày tạo: (29/06/2022)
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns>Mã code và 1 - thành công, 0 - thất bại</returns>
+        [HttpPost("postAll")]
+        public IActionResult Post(List<User> entity)
+        {
+            try
+            {
+                // trả kết quả về client
+                var res = _service.InsertAllService(entity);
+                return StatusCode(201, res);
             }
+            catch (Exception ex)
+            {
+
+                return HandleException(ex);
+            }
+        }
 
         /// <summary>
         /// Phân trang 
@@ -66,5 +75,26 @@ namespace MISA.QuyTrinh.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Lấy mã người dùng
+        /// Người tạo: Khuất Quang Hoàng
+        /// Ngày tạo: (15/8/2022)
+        /// </summary>
+        /// <returns>ok - mã người dùng, failed - message</returns>
+        [HttpGet("NewUserCode")]
+        public IActionResult GetNewUserCode()
+        {
+            try
+            {
+                var data = _repository.GetNewUserCode();
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return (ActionResult)HandleException(ex);
+            }
+        }
+
+        #endregion
     }
 }

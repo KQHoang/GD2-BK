@@ -142,6 +142,10 @@ namespace MISA.QuyTrinh.Infrastructure.Repository
             }
         }
 
+        /// <summary>
+        /// Lấy kết nối server
+        /// </summary>
+        /// <returns>kết nối</returns>
         public MySqlConnection GetConnection()
         {
             return new MySqlConnection(ConnectionString);

@@ -69,12 +69,24 @@ namespace MISA.QuyTrinh.Core.Models
         /// </summary>
         public int Status { get; set; }
 
+        /// <summary>
+        /// Tên phòng ban
+        /// </summary>
         public string? DepartmentName { get; set; }
 
+        /// <summary>
+        /// Tên vị trí công việc
+        /// </summary>
         public string? PositionName { get; set; }
 
+        /// <summary>
+        /// Tên vai trò
+        /// </summary>
         public string? RoleName { get; set; }
 
+        /// <summary>
+        /// mảng chứa id vai trò (sử dụng khi thêm mới nhiều người dùng)
+        /// </summary>
         public List<Guid> RoleID { get; set;}
 
         #endregion

@@ -11,13 +11,23 @@ namespace MISA.QuyTrinh.Api.Controllers
     [ApiController]
     public class UserRolesController : BaseController<User_Role>
     {
+        #region Declare
         IUserRoleRepository _repository;
         IUserRoleServices _services;
+
+        #endregion
+
+        #region Constructor
         public UserRolesController(IUserRoleRepository repository, IUserRoleServices services) : base(repository, services)
         {
             _repository = repository;    
             _services = services;
         }
+
+        #endregion
+
+        #region Methods
+
         /// <summary>
         /// Xoá dữ liệu
         /// Người tạo: Khuất Quang Hoàng
@@ -62,5 +72,6 @@ namespace MISA.QuyTrinh.Api.Controllers
             }
         }
 
+        #endregion
     }
 }
