@@ -29,13 +29,13 @@ namespace MISA.QuyTrinh.Core.Services
         /// </summary>
         /// <param name="entity">đối tượng cần kiểm tra dữ liệu</param>
         /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
-        protected override int DoUpdate(User_Role entity)
+         async protected override Task<int> DoUpdate(User_Role entity)
         {
             //var res = _repository.Update(entity);
             //return res;
             if (entity.status == 1)
             {
-                var res = _repository.Insert(entity);
+                var res =await  _repository.Insert(entity);
                 return res;
             }
 

@@ -88,16 +88,16 @@ namespace MISA.QuyTrinh.Core.Services
         /// </summary>
         /// <param name="entity">đối tượng cần kiểm tra dữ liệu</param>
         /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
-        protected override int DoInsert(User entity)
+        async protected override Task<int> DoInsert(User entity)
         {
             User user = new User(entity.UserCode, entity.FullName, entity.DepartmentID, entity.PositionID, entity.Email, entity.Status);
-            var res = _repository.Insert(user);
+            var res = await _repository.Insert(user);
             var list = new List<int>();
             List<Guid> roleIDs = entity.RoleID;
             foreach (var item in roleIDs)
             {
                 User_Role userRole = new User_Role(user.UserID, item);
-                var response = _roleRepository.Insert(userRole);
+                var response = await _roleRepository.Insert(userRole);
                 list.Add(response);
             }
             foreach (var item in list)

@@ -33,7 +33,7 @@ namespace MISA.QuyTrinh.Core.Interfaces.Repository
         /// Ngày tạo: (3/8/2022)
         /// </summary>
         /// <returns></returns>
-        int Insert(MisaEntity entity);
+        Task<int> Insert(MisaEntity entity);
 
         /// <summary>
         /// Cập nhật
@@ -41,7 +41,7 @@ namespace MISA.QuyTrinh.Core.Interfaces.Repository
         /// Ngày tạo: (3/8/2022)
         /// </summary>
         /// <returns></returns>
-        int Update(MisaEntity entity);
+        Task<int> Update(MisaEntity entity);
 
         /// <summary>
         /// Xoá dữ liệu

@@ -113,13 +113,13 @@ namespace MISA.QuyTrinh.Infrastructure.Repository
         /// </summary>
         /// <param name="department">đối tượng cần thêm</param>
         /// <returns>1 - thêm thành công, 0 - thêm thất bai</returns>
-        public int Insert(MisaEntity entity)
+        async public Task<int> Insert(MisaEntity entity)
         {
             using (SqlConnection = new MySqlConnection(ConnectionString))
             {
 
                 var sqlQuery = $"Proc_Insert{TableName}";
-                var res = SqlConnection.Execute(sqlQuery, param: entity, commandType: System.Data.CommandType.StoredProcedure);
+                var res = await SqlConnection.ExecuteAsync(sqlQuery, param: entity, commandType: System.Data.CommandType.StoredProcedure);
                 return res;
             }
         }
@@ -131,13 +131,13 @@ namespace MISA.QuyTrinh.Infrastructure.Repository
         /// </summary>
         /// <param name="department">đối tượng cần cập nhật</param>
         /// <returns>1 - cập nhật thành công, 0 - cập nhật thất bại</returns>
-        public int Update(MisaEntity entity)
+        async public Task<int> Update(MisaEntity entity)
         {
             using (SqlConnection = new MySqlConnection(ConnectionString))
             {
 
                 var sqlQuery = $"Proc_Update{TableName}";
-                var res = SqlConnection.Execute(sqlQuery, param: entity, commandType: System.Data.CommandType.StoredProcedure);
+                var res = await SqlConnection.ExecuteAsync(sqlQuery, param: entity, commandType: System.Data.CommandType.StoredProcedure);
                 return res;
             }
         }

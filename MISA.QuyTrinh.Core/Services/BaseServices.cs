@@ -38,11 +38,11 @@ namespace MISA.QuyTrinh.Core.Services
         /// <param name="entity">đối tượng cần thêm</param>
         /// <returns>1 - ok</returns>
         /// <exception cref="MisaValidateException"></exception>
-        public int InsertService(MisaEntity entity)
+        async public Task<int> InsertService(MisaEntity entity)
         {
             // Thêm mới
-            this.BeforeInsert(entity);
-            var res = this.DoInsert(entity);
+            await this.BeforeInsert(entity);
+            var res = await this.DoInsert(entity);
             this.AfterInsert(entity);
             return res;
 
@@ -56,16 +56,16 @@ namespace MISA.QuyTrinh.Core.Services
         /// <param name="entity">đối tượng cần cập nhật</param>
         /// <returns>1 - thành công, 0 - thất bại</returns>
         /// <exception cref="MisaValidateException"></exception>
-        public int UpdateService(MisaEntity entity)
-        {
+            async public Task<int> UpdateService(MisaEntity entity)
+            {
             // Validate dữ liệu
             var isValid = ValidateUpdate(entity);
             if (isValid == true)
             {
                 // Cập nhật
-                this.BeforeUpdate(entity);
-                var res = this.DoUpdate(entity);
-                this.AfterInsert(entity);
+                await this.BeforeUpdate(entity);
+                var res = await this.DoUpdate(entity);
+                this.AfterUpdate(entity);
                 return res;
             }
             else
@@ -94,7 +94,7 @@ namespace MISA.QuyTrinh.Core.Services
         /// </summary>
         /// <param name="entity">đối tượng cần kiểm tra dữ liệu</param>
         /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
-        protected virtual MisaEntity BeforeInsert(MisaEntity entity)
+        async protected virtual Task<MisaEntity> BeforeInsert(MisaEntity entity)
         {
             return entity;
         }
@@ -106,7 +106,7 @@ namespace MISA.QuyTrinh.Core.Services
         /// </summary>
         /// <param name="entity">đối tượng cần kiểm tra dữ liệu</param>
         /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
-        protected virtual void BeforeUpdate(MisaEntity entity)
+        async protected virtual Task BeforeUpdate(MisaEntity entity)
         {
 
         }
@@ -118,9 +118,9 @@ namespace MISA.QuyTrinh.Core.Services
         /// </summary>
         /// <param name="entity">đối tượng cần kiểm tra dữ liệu</param>
         /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
-        protected virtual int DoUpdate(MisaEntity entity)
+        async protected virtual Task<int> DoUpdate(MisaEntity entity)
         {
-            var res = _repository.Update(entity);
+            var res = await _repository.Update(entity);
             return res;
         }
 
@@ -143,9 +143,9 @@ namespace MISA.QuyTrinh.Core.Services
         /// </summary>
         /// <param name="entity">đối tượng cần kiểm tra dữ liệu</param>
         /// <returns>true - validate hợp lệ, false - lỗi validate</returns>
-        protected virtual int DoInsert(MisaEntity entity)
+        async protected virtual Task<int> DoInsert(MisaEntity entity)
         {
-            var res = _repository.Insert(entity);
+            var res = await _repository.Insert(entity);
             return res;
 
         }
@@ -207,9 +207,10 @@ namespace MISA.QuyTrinh.Core.Services
                 try
                 {
                     foreach (var item in entity)
+
                     {
                         var res = this.InsertService(item);
-                        if (res != 1)
+                        if (res.Result != 1)
                             throw new MisaValidateException(ErrorValidateMsg);
                     }
                 }
@@ -247,7 +248,7 @@ namespace MISA.QuyTrinh.Core.Services
                     foreach (var item in entity)
                     {
                         var res = this.UpdateService(item);
-                        if (res == 0)
+                        if (res.Result == 0)
                             throw new MisaValidateException(ErrorValidateMsg);
                     }
                 }
