@@ -35,14 +35,14 @@ namespace MISA.QuyTrinh.Core.Services
             //return res;
             if (entity.status == 1)
             {
-                var res =await  _repository.Insert(entity);
-                return res;
+                var rowAffectedChange = await  _repository.Insert(entity);
+                return rowAffectedChange;
             }
 
             if (entity.status == 2)
             {
-                var res = _repository.Delete(entity.UserID, entity.RoleID);
-                return res;
+                var rowAffectedChange = _repository.Delete(entity.UserID, entity.RoleID);
+                return rowAffectedChange;
             }
             return 1;
         }

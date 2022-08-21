@@ -14,6 +14,7 @@ namespace MISA.QuyTrinh.Core.Services
     {
         IUserRepository _repository;
         IUserRoleRepository _roleRepository;
+        string langCode = Common.LanguageCode;
         #region Constructor
         public UserServices(IUserRepository repository, IUserRoleRepository roleRepository) : base(repository)
         {
@@ -36,31 +37,31 @@ namespace MISA.QuyTrinh.Core.Services
         {
             if (string.IsNullOrEmpty(entity.UserCode))
             {
-                ErrorValidateMsg.Add(index + ": Mã người dùng không được để trống");
+                ErrorValidateMsg.Add(index + ": " + Resources.Resource.ResourceManager.GetString($"UserCode_{langCode}"));
                 IsValid = false;
             }
 
             if (string.IsNullOrEmpty(entity.FullName))
             {
-                ErrorValidateMsg.Add(index + ": Tên người dùng không được để trống");
+                ErrorValidateMsg.Add(index + ": " + Resources.Resource.ResourceManager.GetString($"FullName_{langCode}"));
                 IsValid = false;
             }
 
             if (string.IsNullOrEmpty(entity.Email))
             {
-                ErrorValidateMsg.Add(index + ": Email không được để trống");
+                ErrorValidateMsg.Add(index + ": " + Resources.Resource.ResourceManager.GetString($"Email_{langCode}"));
                 IsValid = false;
             }
 
             if(entity.RoleID.Count == 0)
             {
-                ErrorValidateMsg.Add(index + ": Vai trò không được để trống");
+                ErrorValidateMsg.Add(index + ": " + Resources.Resource.ResourceManager.GetString($"Role_{langCode}"));
                 IsValid = false;
             }
 
             if (entity.Status == null)
             {
-                ErrorValidateMsg.Add(index + ": Trạng thái người dùng không được để trống");
+                ErrorValidateMsg.Add(index + ": " + Resources.Resource.ResourceManager.GetString($"Status_{langCode}"));
                 IsValid = false;
             }
 
@@ -68,14 +69,14 @@ namespace MISA.QuyTrinh.Core.Services
             {
                 if (!Regex.IsMatch(entity.Email, @"^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$"))
                 {
-                    ErrorValidateMsg.Add(index + ": Email không đúng định dang");
+                    ErrorValidateMsg.Add(index + ": " + Resources.Resource.ResourceManager.GetString($"EmailValid_{langCode}"));
                     IsValid = false;
                 }
             }
             //validate mã
             if (_repository.CheckUserCode(entity.UserCode) == true)
             {
-                ErrorValidateMsg.Add(index+ ": Mã người dùng đã tồn tại");
+                ErrorValidateMsg.Add(index+ ": " + Resources.Resource.ResourceManager.GetString($"UserCodeExist_{langCode}"));
                 IsValid = false;
             }
             return IsValid;
@@ -91,25 +92,28 @@ namespace MISA.QuyTrinh.Core.Services
         async protected override Task<int> DoInsert(User entity)
         {
             User user = new User(entity.UserCode, entity.FullName, entity.DepartmentID, entity.PositionID, entity.Email, entity.Status);
-            var res = await _repository.Insert(user);
-            var list = new List<int>();
-            List<Guid> roleIDs = entity.RoleID;
-            foreach (var item in roleIDs)
+            var rowAffectedChangeUser = await _repository.Insert(user);
+            //var list = new List<int>();
+            //List<Guid> roleIDs = entity.RoleID;
+            var roleIDs = entity.RoleID;
+
+            foreach (var roleID in roleIDs)
             {
-                User_Role userRole = new User_Role(user.UserID, item);
-                var response = await _roleRepository.Insert(userRole);
-                list.Add(response);
+                User_Role userRole = new User_Role(user.UserID, roleID);
+                var rowAffectedChangeUserRole = await _roleRepository.Insert(userRole);
+                if (rowAffectedChangeUserRole != 1)
+                    return 0;
             }
-            foreach (var item in list)
-            {
-                if(item == 0)
-                {
-                    res = 0;
-                    break;
-                }
+            //foreach (var item in list)
+            //{
+            //    if(item == 0)
+            //    {
+            //        res = 0;
+            //        break;
+            //    }
                     
-            }
-            return res;
+            //}
+            return rowAffectedChangeUser;
 
         }
 

@@ -35,7 +35,7 @@ namespace MISA.QuyTrinh.Core.Interfaces.Services
         /// </summary>
         /// <param name="entity">đối tượng cần thêm</param>
         /// <returns>1 - thành công, 0 - thất bại</returns>
-        int InsertAllService(IEnumerable<MisaEntity> entity);
+        int InsertAllService(IEnumerable<MisaEntity> entitys);
 
         /// <summary>
         /// dịch vụ cập nhật thông tin (Validate)
@@ -44,7 +44,7 @@ namespace MISA.QuyTrinh.Core.Interfaces.Services
         /// </summary>
         /// <param name="entity">đối tượng cần cập nhật</param>
         /// <returns>1 - thành công, 0 - thất bại</returns>
-        int UpdateService(IEnumerable<MisaEntity> entity);
+        int UpdateService(IEnumerable<MisaEntity> entitys);
 
 
         #endregion
